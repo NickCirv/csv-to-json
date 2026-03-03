@@ -1,0 +1,31 @@
+{
+  "name": "csv-to-json",
+  "version": "1.0.0",
+  "description": "Convert CSV↔JSON↔YAML with type inference, filtering, and schema detection. Zero dependencies.",
+  "type": "module",
+  "bin": {
+    "csv-to-json": "./index.js",
+    "c2j": "./index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "developer-tools",
+    "cli",
+    "nodejs",
+    "zero-dependencies",
+    "csv",
+    "json",
+    "yaml",
+    "data-conversion",
+    "etl",
+    "developer-productivity"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NickCirv/csv-to-json.git"
+  },
+  "homepage": "https://github.com/NickCirv/csv-to-json#readme"
+}
