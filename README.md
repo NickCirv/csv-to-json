@@ -1,3 +1,5 @@
+![Banner](banner.svg)
+
 # csv-to-json
 
 Convert CSV↔JSON↔YAML with type inference, filtering, schema detection, and streaming support.
