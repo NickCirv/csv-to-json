@@ -1,174 +1,61 @@
-![Banner](banner.svg)
+<div align="center">
 
 # csv-to-json
 
-Convert CSV↔JSON↔YAML with type inference, filtering, schema detection, and streaming support.
+**Convert CSV, JSON, and YAML between formats — with type inference, filtering, and schema detection.**
 
-**Zero external dependencies.** Built-in Node.js modules only (`fs`, `path`, `readline`). Node 18+.
+[![License: MIT](https://img.shields.io/badge/License-MIT-0B0A09?style=flat-square&labelColor=0B0A09&color=555)](LICENSE)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-0B0A09?style=flat-square&labelColor=0B0A09&color=555)](package.json)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-0B0A09?style=flat-square&labelColor=0B0A09&color=555)](package.json)
 
----
+</div>
 
 ## Install
 
 ```bash
-npm install -g csv-to-json
-# or
-npx csv-to-json <input.csv>
+npx github:NickCirv/csv-to-json data.csv
 ```
 
-Also available as `c2j` short alias after global install.
-
----
+Also available as the `c2j` short alias after install.
 
 ## Usage
 
-```
-csv-to-json <input>          Convert file (format inferred from extension)
-csv-to-json                  Read from stdin
-cat file.csv | csv-to-json
+```bash
+# CSV → JSON (default)
+npx github:NickCirv/csv-to-json data.csv
 
-OPTIONS
-  --format <fmt>       Output format: json | yaml | csv  (default: json)
-  --from <fmt>         Input format override: csv | json | yaml
-  --delimiter <char>   Force CSV delimiter (default: auto-detect , | \t ; |)
-  --no-header          First row is data, not headers (cols named col0, col1...)
-  --types              Enable type inference (numbers, booleans, null, ISO dates)
-  --pretty             Pretty-print JSON output (default: compact)
-  --schema             Print inferred schema and exit
-  --output <file>      Write output to file instead of stdout
-  --limit <n>          Only process first n data rows
-  --filter <f>=<v>     Filter rows where field equals value
-  --select <f1,f2>     Select only these columns (comma-separated)
-  --help, -h           Show this help
+# CSV → YAML with type inference
+npx github:NickCirv/csv-to-json data.csv --format yaml --types --pretty
+
+# JSON or YAML → CSV
+npx github:NickCirv/csv-to-json data.json
+npx github:NickCirv/csv-to-json data.yaml --format csv
+
+# Pipe from stdin
+cat data.csv | npx github:NickCirv/csv-to-json --format yaml
+
+# Inspect inferred schema
+npx github:NickCirv/csv-to-json data.csv --schema
 ```
+
+| Flag | Description |
+|---|---|
+| `--format <fmt>` | Output format: `json` \| `yaml` \| `csv` (default: `json`) |
+| `--from <fmt>` | Input format override: `csv` \| `json` \| `yaml` |
+| `--delimiter <char>` | Force CSV delimiter (default: auto-detect `,` `\t` `;` `\|`) |
+| `--no-header` | First row is data, not headers (columns named `col0`, `col1`, …) |
+| `--types` | Infer numbers, booleans, null, and ISO dates |
+| `--pretty` | Pretty-print JSON output |
+| `--schema` | Print inferred field schema and exit |
+| `--output <file>` | Write output to file instead of stdout |
+| `--limit <n>` | Process only the first n data rows |
+| `--filter <f>=<v>` | Keep rows where field equals value |
+| `--select <f1,f2>` | Keep only these columns |
+
+## What it does
+
+Reads CSV, JSON, or YAML and converts to any of the three formats. CSV input is streamed via `readline` so large files never load fully into memory. Type inference (`--types`) casts string values to numbers, booleans, null, or ISO dates. The built-in YAML serializer and parser use zero external dependencies — no `js-yaml`, nothing.
 
 ---
 
-## Examples
-
-### CSV to JSON
-
-```bash
-csv-to-json data.csv
-# [{"id":"1","name":"Alice Johnson","age":"29",...}]
-
-csv-to-json data.csv --types --pretty
-# Numbers, booleans, dates inferred automatically
-```
-
-### CSV to YAML
-
-```bash
-csv-to-json data.csv --format yaml
-# - id: 1
-#   name: Alice Johnson
-#   age: 29
-```
-
-### JSON / YAML to CSV
-
-```bash
-csv-to-json data.json
-# id,name,age
-# 1,Alice Johnson,29
-
-csv-to-json data.yaml --format csv
-```
-
-### Schema Inference
-
-```bash
-csv-to-json data.csv --schema
-# Schema inference:
-# ────────────────────────────────────────────────────────────
-#   id: number
-#   samples: "1", "2", "3"
-#   name: string
-#   age: number
-#   join_date: date
-#   active: string (infer boolean with --types)
-```
-
-### Filter and Select Columns
-
-```bash
-csv-to-json data.csv --filter country=UK --select name,age,salary --types --pretty
-# Only UK rows, three columns, with type inference
-```
-
-### Pipe Support
-
-```bash
-cat data.csv | csv-to-json --format yaml
-cat data.csv | csv-to-json --types | jq '.[0]'
-```
-
-### Write to File
-
-```bash
-csv-to-json data.csv --format yaml --output output.yaml
-csv-to-json data.csv --types --pretty --output data.json
-```
-
-### Large Files (Streaming)
-
-CSV input is always streamed via `readline` — handles files of any size without loading everything into memory.
-
-```bash
-csv-to-json huge.csv --limit 1000 --format yaml
-```
-
-### Tab / Pipe / Semicolon Delimiters
-
-```bash
-csv-to-json data.tsv                        # auto-detected
-csv-to-json data.csv --delimiter "|"        # forced
-csv-to-json data.csv --delimiter ";"        # semicolon
-```
-
-### No-Header CSVs
-
-```bash
-csv-to-json data.csv --no-header
-# Columns named col0, col1, col2, ...
-```
-
----
-
-## Type Inference (`--types`)
-
-When `--types` is enabled, string values are cast to their proper types:
-
-| Input string | Inferred type | Output |
-|---|---|---|
-| `"42"` | number | `42` |
-| `"3.14"` | number | `3.14` |
-| `"true"` / `"True"` / `"TRUE"` | boolean | `true` |
-| `"false"` / `"False"` / `"FALSE"` | boolean | `false` |
-| `""` / `"null"` / `"NULL"` / `"N/A"` | null | `null` |
-| `"2024-01-15"` | date string (validated ISO 8601) | `"2024-01-15"` |
-| everything else | string | unchanged |
-
----
-
-## YAML Support
-
-YAML serialization and parsing are implemented in pure JavaScript — no `js-yaml` or any other dependency. Supports:
-
-- Block-style arrays of objects (the most common ETL format)
-- Proper quoting of strings with special YAML characters
-- Numbers, booleans, nulls
-
----
-
-## Security
-
-- Zero external npm dependencies — no supply-chain risk
-- All I/O via built-in `fs` and `readline` only
-- No `eval`, no `exec`, no shell spawning
-
----
-
-## License
-
-MIT
+<sub>Zero dependencies · Node ≥18 · MIT · by <a href="https://github.com/NickCirv">NickCirv</a></sub>
