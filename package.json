@@ -7,8 +7,11 @@
     "csv-to-json": "./index.js",
     "c2j": "./index.js"
   },
+  "scripts": {
+    "test": "node --test"
+  },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "keywords": [
     "developer-tools",
