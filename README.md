@@ -1,61 +1,84 @@
-<div align="center">
+![Nicholas Ashkar — csv-to-json](assets/nicholas-ashkar/banner.png)
 
 # csv-to-json
 
-**Convert CSV, JSON, and YAML between formats — with type inference, filtering, and schema detection.**
+Converts tabular CSV, JSON and a limited YAML subset, with optional selection and type inference.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-0B0A09?style=flat-square&labelColor=0B0A09&color=555)](LICENSE)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-0B0A09?style=flat-square&labelColor=0B0A09&color=555)](package.json)
-[![Node](https://img.shields.io/badge/node-%3E%3D18-0B0A09?style=flat-square&labelColor=0B0A09&color=555)](package.json)
 
-</div>
 
-## Install
 
-```bash
-npx github:NickCirv/csv-to-json data.csv
-```
 
-Also available as the `c2j` short alias after install.
 
-## Usage
 
-```bash
-# CSV → JSON (default)
-npx github:NickCirv/csv-to-json data.csv
+<a id="usage"></a>
 
-# CSV → YAML with type inference
-npx github:NickCirv/csv-to-json data.csv --format yaml --types --pretty
+<a id="csv--json-default"></a>
 
-# JSON or YAML → CSV
-npx github:NickCirv/csv-to-json data.json
-npx github:NickCirv/csv-to-json data.yaml --format csv
+<a id="csv--yaml-with-type-inference"></a>
 
-# Pipe from stdin
-cat data.csv | npx github:NickCirv/csv-to-json --format yaml
+<a id="json-or-yaml--csv"></a>
 
-# Inspect inferred schema
-npx github:NickCirv/csv-to-json data.csv --schema
-```
+<a id="pipe-from-stdin"></a>
 
-| Flag | Description |
-|---|---|
-| `--format <fmt>` | Output format: `json` \| `yaml` \| `csv` (default: `json`) |
-| `--from <fmt>` | Input format override: `csv` \| `json` \| `yaml` |
-| `--delimiter <char>` | Force CSV delimiter (default: auto-detect `,` `\t` `;` `\|`) |
-| `--no-header` | First row is data, not headers (columns named `col0`, `col1`, …) |
-| `--types` | Infer numbers, booleans, null, and ISO dates |
-| `--pretty` | Pretty-print JSON output |
-| `--schema` | Print inferred field schema and exit |
-| `--output <file>` | Write output to file instead of stdout |
-| `--limit <n>` | Process only the first n data rows |
-| `--filter <f>=<v>` | Keep rows where field equals value |
-| `--select <f1,f2>` | Keep only these columns |
+<a id="inspect-inferred-schema"></a>
 
 ## What it does
 
-Reads CSV, JSON, or YAML and converts to any of the three formats. CSV input is streamed via `readline` so large files never load fully into memory. Type inference (`--types`) casts string values to numbers, booleans, null, or ISO dates. The built-in YAML serializer and parser use zero external dependencies — no `js-yaml`, nothing.
+- Format/delimiter selection.
+- Filtering and field projection.
+- Schema inference.
+- File/stdin input.
+- Optional output file.
 
----
 
-<sub>Zero dependencies · Node ≥18 · MIT · by <a href="https://github.com/NickCirv">NickCirv</a></sub>
+<a id="install"></a>
+
+## Quickstart
+
+Prerequisites: Node.js `>=20` and npm. The checkout below pins the source used for this documentation.
+
+```sh
+git clone https://github.com/NickCirv/csv-to-json.git
+cd csv-to-json
+git checkout 3ce07cf7a9a0a91ff553387dd06a581ce1eecbe3
+```
+
+In the cloned directory:
+
+Save this small fixture as `people.csv`:
+
+```csv
+name,age
+Ada,36
+Sam,20
+```
+
+```sh
+node index.js people.csv --types --pretty
+```
+
+**Expected behavior (illustrative, not captured):** Reads the fixture above and prints JSON rows with numeric ages.
+
+Examples are source-inspected, **not runtime-tested**. See the research record for verification gaps.
+
+## Boundaries and data
+
+The YAML parser is limited and CSV handling is not a general spreadsheet engine. Type inference can change identifiers such as leading-zero values; leave it off when exact strings matter.
+
+## Development
+
+The manifest defines `npm test` as:
+
+```sh
+node --test
+```
+
+The captured suite is a smoke check, not end-to-end behavior coverage. Examples include “entry is valid JavaScript”. Tests were not run for this documentation revision.
+
+See [implementation and command reference](docs/REFERENCE.md) for the package scripts and inspected interfaces, and [research record](docs/RESEARCH.md) for the pinned source, document decisions and unresolved checks.
+
+## License and contact
+
+See [LICENSE](LICENSE) for the original terms and attribution. Legal text is unchanged.
+
+[Nicholas Ashkar](https://nicholashkar.com/) · [Discuss a project](https://nicholashkar.com/#oxblood-contact)
